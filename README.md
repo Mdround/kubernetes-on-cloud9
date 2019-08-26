@@ -49,17 +49,21 @@ aws configure set default.region ${AWS_REGION}
 aws configure get default.region
 ```
 
-Check that the right IAM role is attached to the CLOUD9 workspace. The output assumed-role name (ARN) should contain the IAM role defined above (e.g 'eksworkshop-admin')
+Check that the right IAM role is attached to the Cloud9 workspace. The output assumed-role name (ARN) should contain the IAM role defined above (e.g 'eksworkshop-admin')
 ```
 aws sts get-caller-identity
 ```
 
-Run this command to generate SSH Key in Cloud9. This key will be used on the worker node instances to allow ssh access if necessary.
-```ssh-keygen```
-- Press 'enter' 3 times, to accept defaults
+Generate an ssh key in Cloud9. This key will be used on the worker node instances to allow ssh access if necessary.
+```
+ssh-keygen
+```
+- Press 'enter' 3 times, to accept the defaults.
 
 Upload the public key to your EC2 region:
-```aws ec2 import-key-pair --key-name "eksworkshop" --public-key-material file://~/.ssh/id_rsa.pub```
+```
+aws ec2 import-key-pair --key-name "eksworkshop" --public-key-material file://~/.ssh/id_rsa.pub
+```
 
 Download the eksctl binary
 ```
@@ -68,12 +72,21 @@ sudo mv -v /tmp/eksctl /usr/local/bin
 eksctl version
 ```
 
+Verify the eksctl binary is in the path, and executable:
+```
+   which eksctl &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
+```
+
 Create an EKS cluster
-```eksctl create cluster --version=1.13 --name=eksworkshop-eksctl --nodes=3 --node-ami=auto --region=${AWS_REGION}```
+```
+eksctl create cluster --version=1.13 --name=eksworkshop-eksctl --nodes=3 --node-ami=auto --region=${AWS_REGION}
+```
 -  **Wait** 10-15 mins...
 
 Test the cluster: confirm your Nodes
-```kubectl get nodes```
+```
+kubectl get nodes
+```
 
 ## Optional steps ##
 
@@ -88,12 +101,16 @@ echo "export INSTANCE_PROFILE_ARN=${INSTANCE_PROFILE_ARN}" >> ~/.bash_profile
 
 ### Deploy the K8s dashboard ###
 
-... with the following command:
-```kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml```
+... with the following command (n.b. might might to update version numbers, in the future)
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+```
 
 Since this is deployed to our private cluster, we need to access it via a proxy. 
 Kube-proxy is available to proxy our requests to the dashboard service. In your workspace, run the following command:
-```kubectl proxy --port=8080 --address='0.0.0.0' --disable-filter=true &```
+```
+kubectl proxy --port=8080 --address='0.0.0.0' --disable-filter=true &
+```
 This will start the proxy, listen on port 8080, listen on all interfaces, and will disable the filtering of non-localhost requests.
 This command will continue to run in the background of the current terminal’s session.
 
@@ -102,8 +119,10 @@ To access the K8s dashboard:
 - scroll to the end of the URL and append: 
 ```/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/```
 
-Open a New Terminal Tab and enter:
-```aws eks get-token --cluster-name eksworkshop-eksctl | jq -r '.status.token'```
+Open a new Terminal tab and enter:
+```
+aws eks get-token --cluster-name eksworkshop-eksctl | jq -r '.status.token'
+```
 
 - Copy the output of this command,
 - click the radio button next to '**Token**', 
