@@ -12,12 +12,77 @@ Based on https://aws.amazon.com/blogs/opensource/kubeflow-amazon-eks/
   - if you don't necessarily want to start instances immediately, you can always just add it to the Service Catalog rather than launching.
 - Ensure that you can launch at least two instances of GPU instances (P2 or P3); you can raise this limit through a service request via the EC2 console.
 
-## Create an EKS cluster with GPU instances ##
+## Presumed requisites ##
+init'ing kubectl failed, initially, citing 
+```
+Code 400 with message: Could not find command aws-iam-authenticator in PATH
+```
+... and so I've assumed we also need to install aws-iam-authenticator
+
+## Installing aws-iam-authenticator ##
+
+To install aws-iam-authenticator on Linux
+
+1. Download the Amazon EKS-vended aws-iam-authenticator binary from Amazon S3:
+```
+curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator
+```
+(Optional) Verify the downloaded binary with the SHA-256 sum provided in the same bucket prefix.
+
+2. Download the SHA-256 sum for your system.
+```
+curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator.sha256
+```
+Check the SHA-256 sum for your downloaded binary.
+
+```
+openssl sha1 -sha256 aws-iam-authenticator
+```
+Compare the generated SHA-256 sum in the command output against your downloaded aws-iam-authenticator.sha256 file. The two should match.
+
+3. Apply execute permissions to the binary.
+```
+chmod +x ./aws-iam-authenticator
+```
+
+4. Copy the binary to a folder in your $PATH. We recommend creating a $HOME/bin/aws-iam-authenticator and ensuring that $HOME/bin comes first in your $PATH.
+```
+mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$HOME/bin:$PATH
+```
+
+5. Add $HOME/bin to your PATH environment variable.
+```
+echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+```
+
+6. Test that the aws-iam-authenticator binary works.
+```
+aws-iam-authenticator help
+```
+If you have an existing Amazon EKS cluster, create a kubeconfig file for that cluster. 
+
+For more information, see [Create a kubeconfig for Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html). 
+Otherwise, see [Creating an Amazon EKS Cluster to create a new Amazon EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html).
+
+## Update the kubeconfig file for an EXISTING cluster ##
+```
+aws eks --region eu-west-1 update-kubeconfig --name eks-kubeflow
+```
+...which results, e.g., in ...
+```
+Added new context arn:aws:eks:eu-west-1:917235138212:cluster/eks-kubeflow to /home/ec2-user/.kube/config
+```
+
+Test the config file
+```
+kubectl get svc
+```
+
+## OR create an EKS cluster with GPU instances ##
 ```
 eksctl create cluster eks-kubeflow --node-type=p3.2xlarge --nodes 2 --region eu-west-1 --timeout=40m
 ```
 The final line should look something like `[✔]  EKS cluster "xxxxxxxx" in "xx-xxxx-x" region is ready`.
-
 
 ## Validate the EKS Cluster ##
 Run this command to apply the **Nvidia Kubernetes device plugin** as a daemonset on each worker node:
@@ -182,5 +247,22 @@ region: eu-west-1
     - eksctl-eks-kubeflow-nodegroup-ng-NodeInstanceRole-12C63K9TZDC3J
 ```
 If you have multiple node groups, you will see corresponding number of node group roles. In that case, please provide the role names as an array.
+
+Run the following commands to set up your environment and initialize the cluster - n.b. ...
+- KFAPP - (set above) Use a relative directory name here rather than absolute path, such as kfapp. It will be used as eks cluster name.
+- CONFIG - (set above) Path to the configuration file 
+```
+kfctl init ${KFAPP} --config=${CONFIG} -V
+cd ${KFAPP}
+
+kfctl generate all -V
+kfctl apply all -V
+```
+
+KFAPP - Use a relative directory name here rather than absolute path, such as kfapp. It will be used as eks cluster name.
+CONFIG - Path to the configuration file
+Important!!! By default, these scripts create an AWS Application Load Balancer for Kubeflow that is open to public. This is good for development testing and for short term use, but we do not recommend that you use this configuration for production workloads.
+
+To secure your installation, Follow the instructions to add authentication.
 
 
