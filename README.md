@@ -22,7 +22,7 @@ Attach the IAM role to the (Cloud9) workspace:
 Install kubectl:
 ```
 sudo curl --silent --location \-o /usr/local/bin/kubectl \
-https://storage.googleapis.com/kubernetes-release/release/v1.13.7/bin/linux/amd64/kubectl
+  https://storage.googleapis.com/kubernetes-release/release/v1.13.7/bin/linux/amd64/kubectl
 
 sudo chmod +x /usr/local/bin/kubectl
 ``` 
@@ -70,7 +70,8 @@ aws ec2 import-key-pair --key-name "eksworkshop" --public-key-material file://~/
 Download the eksctl binary
 ```
 curl --silent --location \
-"https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+  "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" \
+  | tar xz -C /tmp
 
 sudo mv -v /tmp/eksctl /usr/local/bin
 
@@ -107,7 +108,7 @@ kubectl get nodes
 ... with the following command (n.b. might might to update version numbers, in the future)
 ```
 kubectl apply -f \
-https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+  https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
 ```
 
 Since this is deployed to our private cluster, we need to access it via a proxy. 
