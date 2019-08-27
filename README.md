@@ -3,8 +3,8 @@ A record of one process for setting up Kubernetes within AWS on Cloud9, adapted 
 
 ### IN THE CONSOLE ###
 
-- Create an AWS account (or use an existing acct with admin privileges).
-- Create a Cloud9 envt, name it (e.g. '**eksworkshop**'), and sticking with the defaults otherwise.
+- Create an AWS account (or use an existing acct with 'AdministratorAccess' privileges).
+- Create a Cloud9 envt, name it (e.g. `eksworkshop`), sticking with the defaults otherwise.
 - Create a new IAM role with Admin access, using the link: 
 https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2%2BEC2&selectedUseCase=EC2&policies=arn:aws:iam::aws:policy%2FAdministratorAccess
   - Confirm that '**AWS service**' and '**EC2**' are selected, then click '**Next**' to view permissions.
@@ -21,17 +21,19 @@ Attach the IAM role to the (Cloud9) workspace:
 
 Install kubectl:
 ```
-sudo curl --silent --location -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.13.7/bin/linux/amd64/kubectl
+sudo curl --silent --location \-o /usr/local/bin/kubectl \
+https://storage.googleapis.com/kubernetes-release/release/v1.13.7/bin/linux/amd64/kubectl
+
 sudo chmod +x /usr/local/bin/kubectl
 ``` 
 
-Verify the kubecutl binary is in the path, and executable:
+Verify the kubectl binary is in the path, and that it is executable:
 ```
-   which kubectl &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
+which kubectl &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
 ```
 
-Update IAM settings for the [Cloud9] workspace
-- 'Preferences' > 'AWS Settings' > 'Credentials' > 'AWS managed temporary credentials' > [OFF]
+Update IAM settings for the Cloud9 workspace
+- **'Preferences' > 'AWS Settings' > 'Credentials' > 'AWS managed temporary credentials' > [OFF]**
 - Close the Prefs window, to apply the changes.
 
 To ensure temporary credentials aren’t already in place we also remove any existing credentials file:
@@ -49,7 +51,7 @@ aws configure set default.region ${AWS_REGION}
 aws configure get default.region
 ```
 
-Check that the right IAM role is attached to the Cloud9 workspace. The output assumed-role name (ARN) should contain the IAM role defined above (e.g 'eksworkshop-admin')
+Check that the right IAM role is attached to the Cloud9 workspace. The output assumed-role name (ARN) should contain the IAM role defined above (e.g `eksworkshop-admin`)
 ```
 aws sts get-caller-identity
 ```
@@ -67,14 +69,17 @@ aws ec2 import-key-pair --key-name "eksworkshop" --public-key-material file://~/
 
 Download the eksctl binary
 ```
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+curl --silent --location \
+"https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+
 sudo mv -v /tmp/eksctl /usr/local/bin
+
 eksctl version
 ```
 
-Verify the eksctl binary is in the path, and executable:
+Verify that the eksctl binary is in the path, and executable:
 ```
-   which eksctl &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
+which eksctl &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
 ```
 
 ## Optional: Export useful details as reusable variables ##
@@ -101,7 +106,8 @@ kubectl get nodes
 
 ... with the following command (n.b. might might to update version numbers, in the future)
 ```
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+kubectl apply -f \
+https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
 ```
 
 Since this is deployed to our private cluster, we need to access it via a proxy. 
@@ -115,13 +121,12 @@ This command will continue to run in the background of the current terminal’s 
 To access the K8s dashboard: 
 - in your Cloud9 environment, click '**Tools / Preview / Preview Running Application**';
 - scroll to the end of the URL and append: 
-```/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/```
+- `/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`
 
 Open a new Terminal tab and enter:
 ```
 aws eks get-token --cluster-name eksworkshop-eksctl | jq -r '.status.token'
 ```
-
 - Copy the output of this command,
 - click the radio button next to '**Token**', 
 - in the text field below paste the output from the last command, then
@@ -130,5 +135,6 @@ aws eks get-token --cluster-name eksworkshop-eksctl | jq -r '.status.token'
 ## Clean up ##
 ```
 kubectl get svc --all-namespaces
+
 eksctl delete cluster --name=eksworkshop-eksctl
 ```
