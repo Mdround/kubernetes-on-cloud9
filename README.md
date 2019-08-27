@@ -77,7 +77,16 @@ Verify the eksctl binary is in the path, and executable:
    which eksctl &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
 ```
 
-Create an EKS cluster
+## Optional: Export useful details as reusable variables ##
+```
+STACK_NAME=$(eksctl get nodegroup --cluster eksworkshop-eksctl -o json | jq -r '.[].StackName')
+INSTANCE_PROFILE_ARN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceProfileARN") | .OutputValue')
+ROLE_NAME=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceRoleARN") | .OutputValue' | cut -f2 -d/)
+echo "export ROLE_NAME=${ROLE_NAME}" >> ~/.bash_profile
+echo "export INSTANCE_PROFILE_ARN=${INSTANCE_PROFILE_ARN}" >> ~/.bash_profile
+```
+
+## Create an EKS cluster ##
 ```
 eksctl create cluster --version=1.13 --name=eksworkshop-eksctl --nodes=3 --node-ami=auto --region=${AWS_REGION}
 ```
@@ -88,18 +97,7 @@ Test the cluster: confirm your Nodes
 kubectl get nodes
 ```
 
-## Optional steps ##
-
-### Export useful details as reusable variables ###
-```
-STACK_NAME=$(eksctl get nodegroup --cluster eksworkshop-eksctl -o json | jq -r '.[].StackName')
-INSTANCE_PROFILE_ARN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceProfileARN") | .OutputValue')
-ROLE_NAME=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceRoleARN") | .OutputValue' | cut -f2 -d/)
-echo "export ROLE_NAME=${ROLE_NAME}" >> ~/.bash_profile
-echo "export INSTANCE_PROFILE_ARN=${INSTANCE_PROFILE_ARN}" >> ~/.bash_profile
-```
-
-### Deploy the K8s dashboard ###
+## Optional: Deploy the K8s dashboard ##
 
 ... with the following command (n.b. might might to update version numbers, in the future)
 ```
