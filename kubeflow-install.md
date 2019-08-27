@@ -99,6 +99,23 @@ Kubeflow uses **ksonnet**, a command line tool that simplifies the configuration
 (on MacOS, you can also use `brew install ksonnet/tap/ks`).
 
 
+```
+sudo mkdir /usr/local/bin/ksonnetcli  
+sudo curl --location \
+  -o /usr/local/bin/ksonnetcli/ks_0.13.1_linux_amd64.tar.gz \
+  https://github.com/ksonnet/ksonnet/releases/download/v0.13.1/ks_0.13.1_linux_amd64.tar.gz
+```
+
+
+
+
+
+sudo chmod +x /usr/local/bin/kubectl
+Verify the kubectl binary is in the path, and that it is executable:
+
+which kubectl &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
+
+
 ks_0.13.1_linux_amd64.tar.gz
 
 
