@@ -83,6 +83,8 @@ Verify that the eksctl binary is in the path, and executable:
 which eksctl &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
 ```
 
+And you're **ready to start** an EKS cluster. One last, useful step.
+
 ## Optional: Export useful details as reusable variables ##
 ```
 STACK_NAME=$(eksctl get nodegroup --cluster eksworkshop-eksctl -o json | jq -r '.[].StackName')
@@ -94,7 +96,9 @@ echo "export INSTANCE_PROFILE_ARN=${INSTANCE_PROFILE_ARN}" >> ~/.bash_profile
 
 ## Create an EKS cluster ##
 ```
+date
 eksctl create cluster --version=1.13 --name=eksworkshop-eksctl --nodes=3 --node-ami=auto --region=${AWS_REGION}
+date
 ```
 -  **Wait** 10-15 mins...
 
