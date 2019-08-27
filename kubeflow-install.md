@@ -266,3 +266,7 @@ Important!!! By default, these scripts create an AWS Application Load Balancer f
 To secure your installation, Follow the instructions to add authentication.
 
 
+eksctl delete cluster --name=eks-kubeflow
+
+
+
