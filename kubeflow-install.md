@@ -1,5 +1,5 @@
 # Kubeflow Install #
-Based on https://aws.amazon.com/blogs/opensource/kubeflow-amazon-eks/ 
+Based on https://aws.amazon.com/blogs/opensource/kubeflow-amazon-eks/, and https://www.kubeflow.org/docs/aws/deploy/install-kubeflow/
 
 ## Prerequisites met by the 'kubernetes-setup.md' script ##
 - AWS CLI
@@ -64,9 +64,14 @@ If you have an existing Amazon EKS cluster, create a kubeconfig file for that cl
 For more information, see [Create a kubeconfig for Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html). 
 Otherwise, see [Creating an Amazon EKS Cluster to create a new Amazon EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html).
 
-## Update the kubeconfig file for an EXISTING cluster ##
+In setting up the cluster, three different options described in various places in the docs. The following scripts use:
 ```
-aws eks --region eu-west-1 update-kubeconfig --name eks-kubeflow
+export AWS_CLUSTER_NAME='eks-kubeflow'
+```
+
+## Opt1. Update the kubeconfig file for an EXISTING cluster [no GPUs] ##
+```
+aws eks --region eu-west-1 update-kubeconfig --name ${AWS_CLUSTER_NAME}
 ```
 ...which results, e.g., in ...
 ```
@@ -78,11 +83,22 @@ Test the config file
 kubectl get svc
 ```
 
-## OR create an EKS cluster with GPU instances ##
+## OR Opt2. Create an EKS cluster with GPU instances, in one command ##
+
 ```
-eksctl create cluster eks-kubeflow --node-type=p3.2xlarge --nodes 2 --region eu-west-1 --timeout=40m
+eksctl create cluster ${AWS_CLUSTER_NAME} --node-type=p3.2xlarge --nodes 2 --region eu-west-1 --timeout=40m
 ```
 The final line should look something like `[✔]  EKS cluster "xxxxxxxx" in "xx-xxxx-x" region is ready`.
+
+## OR Opt3. Create an EKS cluster, and add GPU instances to it ##
+... following the (newer) page: https://aws.amazon.com/blogs/compute/running-gpu-accelerated-kubernetes-workloads-on-p3-and-p2-ec2-instances-with-amazon-eks/
+
+So, we could create a basic cluster with:
+```
+AWS_REGION = 'eu-west-1'
+eksctl create cluster --version=1.13 --name=${AWS_CLUSTER_NAME} --nodes=3 --node-ami=auto --region=${AWS_REGION}
+```
+
 
 ## Validate the EKS Cluster ##
 Run this command to apply the **Nvidia Kubernetes device plugin** as a daemonset on each worker node:
@@ -227,7 +243,7 @@ kfctl_aws.yaml is one of setup manifests, please check kfctl_aws_cognito.yaml fo
 
 Customize your config file. Retrieve the Amazon EKS cluster name, AWS Region, and IAM role name for your worker nodes.
 ```
-export AWS_CLUSTER_NAME='eks-kubeflow'
+# export AWS_CLUSTER_NAME='eks-kubeflow' (set above)
 export KFAPP=${AWS_CLUSTER_NAME}
 ```
 Note: To get your Amazon EKS worker node IAM role name, you can check IAM setting by running the following commands. This command assumes that you used eksctl to create your cluster. If you use other provisioning tools to create your worker node groups, please find the role that is associated with your worker nodes in the Amazon EC2 console.
