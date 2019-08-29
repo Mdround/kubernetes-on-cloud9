@@ -1,4 +1,7 @@
 # Kubeflow Install #
+
+**N.B. These instructions FAILED, by themselves, at the last documented stage - kfctl apply all **
+
 Based on https://aws.amazon.com/blogs/opensource/kubeflow-amazon-eks/, and https://www.kubeflow.org/docs/aws/deploy/install-kubeflow/
 
 ## Prerequisites met by the 'kubernetes-setup.md' script ##
