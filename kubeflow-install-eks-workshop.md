@@ -102,8 +102,30 @@ kubectl get ingress -n istio-system -o jsonpath='{.items[0].status.loadBalancer.
 ```
 The command above will return the endpoint address. Use this address in a browser to access the Kubeflow dashboard.
 
-Name your workspace. A namespace is a collection of Kubeflow services. Resources created within a namespace are isolated to that namespace. By default, a namespace will be created for you.
+Re the screen "Name your workspace. A namespace is a collection of Kubeflow services. Resources created within a namespace are isolated to that namespace. By default, a namespace will be created for you."
 
-I went with the default namespace, 'anonymous-kubeflow.org'.
+N.B. I initially went with the default namespace, 'anonymous-kubeflow.org', but ended up in an endless loop of splash pages.
+
+Should have followed the EKS Workshop instructions, and used `eksworkshop`. This worked.
+
+## Setting up Jupyter notebooks ##
+... still following https://eksworkshop.com/kubeflow/jupyter/ (learned my lesson!)
+
+- Under 'Quick Shortcuts' in the Kubeflow dashboard, click on 'Create a new Notebook Server'.
+- Select the namespace created in previous step (`eksworkshop`) - this pre-populates the namespace field on the dashboard. 
+- Specify a name (e.g. `myjupyter`) for the notebook and change the CPU value to `1.0`.
+- Scroll to the bottom, take all other defaults, and click on LAUNCH.
+- Wait **2 mins** for the Jupyter notebook to come online. 
+- Click on CONNECT
+
+## Testing TensorFlow within a notebook ##
+- In Jupyter, click 'New > Python 3'
+- Copy into your notebook the sample training code from https://eksworkshop.com/kubeflow/kubeflow.files/mnist-tensorflow.py
+- Click on *Run* within the notebook to load this code.
+- This also creates a new code block. Write the command `main()` in this new code block and click on **Run** again.
+
+
+
+
 
 
