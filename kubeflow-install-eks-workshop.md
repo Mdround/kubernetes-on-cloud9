@@ -18,9 +18,10 @@ echo "export AWS_AZS=${AWS_AZS}" >> ~/.bash_profile
 export "AWS_AZ=${AWS_AZ}" >> ~/.bash_profile
 envsubst <eksworkshop-kubeflow.yml.template >eksworkshop-kubeflow.yml
 ```
-MDR: at this point I created a new, edited yaml file, eksworkshop-kubeflow-mdr1.yml:
-- renamed the cluster to `eksworkshop-eksctl-mdr1`, and 
-- changed the instances on which it was running to the cheaper `p3.2xlarge`.
+
+MDR: at this point I created a new, edited yaml file, `eksworkshop-kubeflow-mdr1.yml`:
+- changed the name to be given to the cluster, from `eksworkshop-eksctl` to `eksworkshop-eksctl-mdr1`, and 
+- changed the instances on which it was running to (2x) the cheaper `p3.2xlarge`.
 
 Create a cluster specifically for Kubeflow.
 ```
@@ -33,15 +34,6 @@ eksctl create cluster -f eksworkshop-kubeflow-mdr1.yml
 Confirm that the nodes are visible:
 ```
 kubectl get nodes # if we see our node(s), we know we have authenticated correctly
-```
-
-Export the Worker Role Name for use throughout the workshop (but maybe not in the Kubeflow section?):
-```
-STACK_NAME=$(eksctl get nodegroup --cluster eksworkshop-eksctl -o json | jq -r '.[].StackName')
-INSTANCE_PROFILE_ARN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceProfileARN") | .OutputValue')
-ROLE_NAME=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceRoleARN") | .OutputValue' | cut -f2 -d/)
-echo "export ROLE_NAME=${ROLE_NAME}" >> ~/.bash_profile
-echo "export INSTANCE_PROFILE_ARN=${INSTANCE_PROFILE_ARN}" >> ~/.bash_profile
 ```
 
 ## Install Kubeflow on Amazon EKS ##
@@ -73,7 +65,10 @@ sudo mv aws-iam-authenticator /usr/local/bin
 
 Set Kubeflow application name:
 ```
-export AWS_CLUSTER_NAME=eksworkshop-eksctl
+# Old version:
+#export AWS_CLUSTER_NAME=eksworkshop-eksctl
+# New version:
+export AWS_CLUSTER_NAME=eksworkshop-eksctl-mdr1
 export KFAPP=${AWS_CLUSTER_NAME}
 ```
 
@@ -103,8 +98,7 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,MEMORY:.status.allocata
 # ip-192-168-54-93.eu-west-1.compute.internal   251641628Ki   32    4
 # ip-192-168-68-80.eu-west-1.compute.internal   251641628Ki   32    4
 ```
-... although the script above actually setup only one node, for me.
-
+... although this is defined in the YAML script with which we set up the cluster.
 
 ## Kubeflow Dashboard ##
 Get the Kubeflow service endpoint:
