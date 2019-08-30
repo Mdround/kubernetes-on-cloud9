@@ -20,8 +20,8 @@ envsubst <eksworkshop-kubeflow.yml.template >eksworkshop-kubeflow.yml
 ```
 
 MDR: at this point I created a new, edited yaml file, `eksworkshop-kubeflow-mdr1.yml`:
-- changed the name to be given to the cluster, from `eksworkshop-eksctl` to `eksworkshop-eksctl-mdr1`, and 
-- changed the instances on which it was running to (2x) the cheaper `p3.2xlarge`.
+- changed the name to be given to the cluster, from 'eksworkshop-eksctl' to `eksworkshop-eksctl-mdr1`, and 
+- changed the instances on which it was running, from 'p3.8xlarge' to (2x) the cheaper `p3.2xlarge`.
 
 Create a cluster specifically for Kubeflow.
 ```
@@ -34,6 +34,16 @@ eksctl create cluster -f eksworkshop-kubeflow-mdr1.yml
 Confirm that the nodes are visible:
 ```
 kubectl get nodes # if we see our node(s), we know we have authenticated correctly
+```
+
+Export the Worker ROLE_NAME, INSTANCE_PROFILE_ARN, for use throughout the workshop.
+Note the edited cluster name!
+```
+STACK_NAME=$(eksctl get nodegroup --cluster eksworkshop-eksctl-mdr1 -o json | jq -r '.[].StackName')
+INSTANCE_PROFILE_ARN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceProfileARN") | .OutputValue')
+ROLE_NAME=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceRoleARN") | .OutputValue' | cut -f2 -d/)
+echo "export ROLE_NAME=${ROLE_NAME}" >> ~/.bash_profile
+echo "export INSTANCE_PROFILE_ARN=${INSTANCE_PROFILE_ARN}" >> ~/.bash_profile
 ```
 
 ## Install Kubeflow on Amazon EKS ##
@@ -109,9 +119,7 @@ The command above will return the endpoint address. Use this address in a browse
 
 Re the screen "Name your workspace. A namespace is a collection of Kubeflow services. Resources created within a namespace are isolated to that namespace. By default, a namespace will be created for you."
 
-N.B. I initially went with the default namespace, 'anonymous-kubeflow.org', but ended up in an endless loop of splash pages.
-
-Should have followed the EKS Workshop instructions, and used `eksworkshop`. This worked.
+N.B. I've had problems getting caught in an endless loop of splash pages. Opening the page in another browser (after creating the  namespace) sorts this.
 
 ## Setting up Jupyter notebooks ##
 ... still following https://eksworkshop.com/kubeflow/jupyter/ (learned my lesson!)
