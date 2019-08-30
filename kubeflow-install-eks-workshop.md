@@ -1,22 +1,33 @@
 # Kubeflow on AWS install - EKS Workshop version #
 
 ## MDR: Create an EKS cluser ##
-(from https://eksworkshop.com/eksctl/launcheks/#create-eks-cluster-1)
+(from https://eksworkshop.com/eksctl/launcheks/#create-eks-cluster-1 weirdly, not under the Kubernetes section)
 
 ```
-# Normally, you'd do this by: 
+# Normally, you'd create an EKS cluster using something like: 
 # eksctl create cluster --version=1.13 --name=eksworkshop-eksctl --nodes=3 --node-ami=auto --region=${AWS_REGION}`
 # But, if you're planning to run Machine Learning workloads, then use the following commands instead:
 
 curl -OL https://raw.githubusercontent.com/aws-samples/eks-workshop/master/content/eksctl/launcheks.files/eksworkshop-kubeflow.yml.template
 
-export AWS_AZS=$(aws ec2 describe-availability-zones --region=${AWS_REGION} --query 'AvailabilityZones[*].ZoneName' --output json | tr '\n' ' ' | sed 's/[][]//g')
-export AWS_AZ=$(aws ec2 describe-availability-zones --region=${AWS_REGION} --query 'AvailabilityZones[0].ZoneName' --output json)
+export AWS_AZS=$(aws ec2 describe-availability-zones --region=${AWS_REGION} \
+  --query 'AvailabilityZones[*].ZoneName' --output json | tr '\n' ' ' | sed 's/[][]//g')
+export AWS_AZ=$(aws ec2 describe-availability-zones --region=${AWS_REGION} \
+  --query 'AvailabilityZones[0].ZoneName' --output json)
 echo "export AWS_AZS=${AWS_AZS}" >> ~/.bash_profile
 export "AWS_AZ=${AWS_AZ}" >> ~/.bash_profile
 envsubst <eksworkshop-kubeflow.yml.template >eksworkshop-kubeflow.yml
+```
+MDR: at this point I created a new, edited yaml file, eksworkshop-kubeflow-mdr1.yml:
+- renamed the cluster to `eksworkshop-eksctl-mdr1`, and 
+- changed the instances on which it was running to the cheaper `p3.2xlarge`.
 
-eksctl create cluster -f eksworkshop-kubeflow.yml
+Create a cluster specifically for Kubeflow.
+```
+# Original:
+# eksctl create cluster -f eksworkshop-kubeflow.yml
+# Edited:
+eksctl create cluster -f eksworkshop-kubeflow-mdr1.yml
 ```
 
 Confirm that the nodes are visible:
