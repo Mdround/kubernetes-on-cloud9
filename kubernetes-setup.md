@@ -115,7 +115,7 @@ And you're **ready to start** an EKS cluster.
 *N.B.*
 It's not clear, from the workshop instructions, whether their process for Kubeflow deployment assumed the step below ('If you're planning to run Machine Learning workloads...') as a requirement.
 
-TODO: try the Kubeflow step without first following the step below.
+N.B.: the separate Kubeflow script in this repo duplicates this last step (the ML version).
 
 ## Create an EKS cluster ##
 This takes 15 mins to execute: enough time to suck a mint, buy a sledge, have a fast bath. 
@@ -124,20 +124,21 @@ This takes 15 mins to execute: enough time to suck a mint, buy a sledge, have a 
 date
 eksctl create cluster --version=1.13 --name=eksworkshop-eksctl --nodes=3 --node-ami=auto --region=${AWS_REGION}
 
-# N.B. If you're planning to run Machine Learning workloads, then use the following command INSTEAD
-curl -OL https://raw.githubusercontent.com/aws-samples/eks-workshop/master/content/eksctl/launcheks.files/eksworkshop-kubeflow.yml.template
-export AWS_AZS=$(aws ec2 describe-availability-zones --region=${AWS_REGION} --query 'AvailabilityZones[*].ZoneName' --output json | tr '\n' ' ' | sed 's/[][]//g')
-export AWS_AZ=$(aws ec2 describe-availability-zones --region=${AWS_REGION} --query 'AvailabilityZones[0].ZoneName' --output json)
-echo "export AWS_AZS=${AWS_AZS}" >> ~/.bash_profile
-export "AWS_AZ=${AWS_AZ}" >> ~/.bash_profile
-envsubst <eksworkshop-kubeflow.yml.template >eksworkshop-kubeflow.yml
-
-eksctl create cluster -f eksworkshop-kubeflow.yml
+# N.B. If you're planning to run Machine Learning workloads, then use the commands in the Kubeflow repo instead!
 ```
 
 Test the cluster: confirm your Nodes
 ```
 kubectl get nodes
+```
+
+Export the Worker Role Name for use throughout the workshop
+```
+STACK_NAME=$(eksctl get nodegroup --cluster eksworkshop-eksctl -o json | jq -r '.[].StackName')
+INSTANCE_PROFILE_ARN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceProfileARN") | .OutputValue')
+ROLE_NAME=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r '.Stacks[].Outputs[] | select(.OutputKey=="InstanceRoleARN") | .OutputValue' | cut -f2 -d/)
+echo "export ROLE_NAME=${ROLE_NAME}" >> ~/.bash_profile
+echo "export INSTANCE_PROFILE_ARN=${INSTANCE_PROFILE_ARN}" >> ~/.bash_profile
 ```
 
 ## Optional: Deploy the K8s dashboard ##
