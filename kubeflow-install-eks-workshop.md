@@ -147,6 +147,9 @@ cd ${KFAPP}
 kfctl delete all -V
 ```
 
+Delete the nodegroup stack, within CloudFormation.
+- if you try to delete the instances alone, AWS will just spin up new ones
+
 Shutdown the EKS cluster
 ```
 eksctl delete cluster --name=$AWS_CLUSTER_NAME
