@@ -139,7 +139,20 @@ Re the screen "Name your workspace. A namespace is a collection of Kubeflow serv
 - Click on *Run* within the notebook to load this code.
 - This also creates a new code block. Write the command `main()` in this new code block and click on **Run** again.
 
+## Uninstalling Kubeflow ##
 
+Uninstall Kubeflow 
+```
+cd ${KFAPP}
+kfctl delete all -V
+```
+
+Shutdown the EKS cluster
+```
+eksctl delete cluster --name=$AWS_CLUSTER_NAME
+# e.g. 
+# eksctl delete cluster --name=$eksworkshop-eksctl-mdr1
+```
 
 
 
