@@ -119,7 +119,8 @@ The command above will return the endpoint address. Use this address in a browse
 
 Re the screen "Name your workspace. A namespace is a collection of Kubeflow services. Resources created within a namespace are isolated to that namespace. By default, a namespace will be created for you."
 
-N.B. I've had problems getting caught in an endless loop of splash pages. Opening the page in another browser (after creating the  namespace) sorts this.
+**N.B.** 
+- I've had problems getting caught in an endless loop of splash pages. Opening the page in another browser (after creating the  namespace) sorts this.
 
 ## Setting up Jupyter notebooks ##
 ... still following https://eksworkshop.com/kubeflow/jupyter/ (learned my lesson!)
@@ -128,7 +129,8 @@ N.B. I've had problems getting caught in an endless loop of splash pages. Openin
 - Select the namespace created in previous step (`eksworkshop`) - this pre-populates the namespace field on the dashboard. 
 - Specify a name (e.g. `myjupyter`) for the notebook and change the CPU value to `1.0`.
 - Scroll to the bottom, take all other defaults, and click on LAUNCH.
-- Wait **2 mins** for the Jupyter notebook to come online. 
+- Wait **2+ mins** for the Jupyter notebook to come online. 
+  - **N.B.** I've seen it take >5 mins (in fact I stopped for the night, assuming it had failed, and only saw it the next morning) 
 - Click on CONNECT
 
 ## Testing TensorFlow within a notebook ##
