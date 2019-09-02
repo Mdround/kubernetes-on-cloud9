@@ -27,20 +27,20 @@ B. Run a virtual developer environment (VDE), such as:
 This script addresses #3. But [this](https://www.kubeflow.org/docs/other-guides/virtual-dev/getting-started-minikube/) approach requires VirtualBox - which is prohibited within Cloud9, and so we'll have to create an SSH workspace from Cloud9 to another machine.
 
 
-## Steps - TODO: revise these in the light of ssh-workspace reqt ##
+## Steps - TODO: establish whether AWS allows VirtualBox ##
 
 0. Determine EC2 instance type required.
 0. Create Cloud9 ssh-workspace.
-0. Install a Hypervisor (e.g. Virtual Box).
+0. Install a Hypervisor (e.g. VirtualBox).
 0. Install kubectl.
 0. Install minikube.
 0. Test and experiment.
 
-## System requirements ##
+## Determine EC2 instance type required ###
 
-According to the [Kubeflow docs](https://www.kubeflow.org/docs/other-guides/virtual-dev/getting-started-minikube/):
+### System requirements ###
 
-### 0. Determine EC2 instance type required ###
+According to the [Kubeflow docs](https://www.kubeflow.org/docs/other-guides/virtual-dev/getting-started-minikube/)...
 
 **Prerequisites**
 - Laptop, Desktop or a Workstation
@@ -53,28 +53,19 @@ According to the [Kubeflow docs](https://www.kubeflow.org/docs/other-guides/virt
 - Access to an Internet connection with reasonable bandwidth
 - A hypervisor such as VirtualBox, Vmware Fusion, KVM etc. (though installation is covered in the instructions).
 
-Cloud9 options include only t-, m-, and c- instances (no p-, hence no GPU-compute options), but this will be fine for our purposes.
+## Create the EC2 instance ##
 
-For minikube, this means (using the guide [here](https://www.ec2instances.info/?min_memory=12&min_vcpus=2&min_storage=50&region=eu-west-1) the cheaper Cloud9 options meeting this spec include:
-- t3.2xlarge (32GiB, 8 vCPU)
-- m5.2xlarge (32GiB, 8 vCPU)
-- **c5.2xlarge** (16GiB, 8 vCPU) 
-- t2.2xlarge (32GiB, 8 vCPU)
-- m4.2xlarge (32GiB, 8 vCPU)
-- m5.4xlarge (64GiB, 8 vCPU)
-- c5.4xlarge (32GiB, 16 vCPU)
-- m4.4xlarge (64GiB, 16 vCPU)
-- c4.4xlarge (30GiB, 16 vCPU)
+As GPU cards are an 'option', I chose:
+- the `Deep Learning AMI (Ubuntu) Version 24.0 - ami-04b29aaed8d74f8f3` AMI,
+- a `p3.2xlarge` to run it on (8 CPUs, 61GiB of RAM).
 
-Working off local advice, it seems that compute-optimised ('c') instances would be the best option. 
-I used a c5.2xlarge.
+## Create Cloud9 ssh-workspace ##
 
-** N.B.** For MiniKF alone, we only need 2 CPUs, so could get also away with:
-- m3.xlarge (16GiB, 4 vCPU)
-- m4.xlarge (16GiB, 4 vCPU)
-- m5.xlarge (16GiB, 4 vCPU)
-- t2.xlarge (16GiB, 4 vCPU)
-- t3.xlarge (16GiB, 4 vCPU)
+## Install a Hypervisor (e.g. Virtual Box) ##
 
+## Install kubectl ##
 
+## Install minikube ##
+
+## Test and experiment ##
 
