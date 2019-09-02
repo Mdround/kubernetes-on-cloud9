@@ -53,19 +53,112 @@ According to the [Kubeflow docs](https://www.kubeflow.org/docs/other-guides/virt
 - Access to an Internet connection with reasonable bandwidth
 - A hypervisor such as VirtualBox, Vmware Fusion, KVM etc. (though installation is covered in the instructions).
 
-## Create the EC2 instance ##
-
-As GPU cards are an 'option', I chose:
-- the `Deep Learning AMI (Ubuntu) Version 24.0 - ami-04b29aaed8d74f8f3` AMI,
-- a `p3.2xlarge` to run it on (8 CPUs, 61GiB of RAM).
-
 ## Create Cloud9 ssh-workspace ##
 
+Cloud9 options include only t-, m-, and c- instances (no p-, hence no GPU-compute options), but this will be fine for our purposes.
+## Create the EC2 instance ##
+
+For minikube, this means (using the guide [here](https://www.ec2instances.info/?min_memory=12&min_vcpus=2&min_storage=50&region=eu-west-1) the cheaper Cloud9 options meeting this spec include:
+- t3.2xlarge (32GiB, 8 vCPU)
+- m5.2xlarge (32GiB, 8 vCPU)
+- **c5.2xlarge** (16GiB, 8 vCPU) 
+- t2.2xlarge (32GiB, 8 vCPU)
+- m4.2xlarge (32GiB, 8 vCPU)
+- m5.4xlarge (64GiB, 8 vCPU)
+- c5.4xlarge (32GiB, 16 vCPU)
+- m4.4xlarge (64GiB, 16 vCPU)
+- c4.4xlarge (30GiB, 16 vCPU)
+
+Working off local advice, it seems that compute-optimised ('c') instances would be the best option. 
+I used a **c5.2xlarge**.
+
+### Operating systems ###
+I had issues trying to get minikube to run within an Amazon Linux OS. Using the Ubuntu 18.04 server OS worked well, for me.
+
 ## Install a Hypervisor (e.g. Virtual Box) ##
+Apparently, this step isn't possible on an EC2 instance. However, some instructions point out that it isn't necessary to run minikube within VMs.
+e.g. https://www.radishlogic.com/kubernetes/running-minikube-in-aws-ec2-ubuntu/
+Let's try them out...
+
+**in Cloud9...*
+
+## Install AWS CLI ##
+
+- may not be necessary, but useful (and does not come as standard in the Cloud9 **Ubuntu** image)
+```
+pip install awscli --upgrade --user
+aws --version
+```
 
 ## Install kubectl ##
 
+```
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+```
+
+**N.B. Minikube requires Docker - but it's already installed in the Ubuntu 18 environment**
+
 ## Install minikube ##
+```
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+chmod +x minikube
+sudo mv minikube /usr/local/bin/
+minikube version
+```
 
 ## Test and experiment ##
+
+Become a root user.
+```
+sudo -i
+```
+
+If you are not comfortable running commands as root, you must always add sudo before the commands minikube and kubectl: 
+"the vm-driver "none" requires sudo".
+```
+sudo minikube start --vm-driver=none
+```
+
+For me, this generated some useful, colourful output:
+```
+😄  minikube v1.3.1 on Ubuntu 18.04
+🤹  Running on localhost (CPUs=8, Memory=15464MB, Disk=9861MB) ...
+ℹ️   OS release is Ubuntu 18.04.3 LTS
+🐳  Preparing Kubernetes v1.15.2 on Docker 19.03.1 ...
+    ▪ kubelet.resolv-conf=/run/systemd/resolve/resolv.conf
+💾  Downloading kubeadm v1.15.2
+💾  Downloading kubelet v1.15.2
+🚜  Pulling images ...
+🚀  Launching Kubernetes ... 
+🤹  Configuring local host environment ...
+
+⚠️  The 'none' driver provides limited isolation and may reduce system security and reliability.
+⚠️  For more information, see:
+👉  https://minikube.sigs.k8s.io/docs/reference/drivers/none/
+
+⚠️  kubectl and minikube configuration will be stored in /home/ubuntu
+⚠️  To use kubectl or minikube commands as your own user, you may
+⚠️  need to relocate them. For example, to overwrite your own settings:
+
+    ▪ sudo mv /home/ubuntu/.kube /home/ubuntu/.minikube $HOME
+    ▪ sudo chown -R $USER $HOME/.kube $HOME/.minikube
+
+💡  This can also be done automatically by setting the env var CHANGE_MINIKUBE_NONE_USER=true
+⌛  Waiting for: apiserver proxy etcd scheduler controller dns
+🏄  Done! kubectl is now configured to use "minikube"
+```
+
+## Commands that work ##
+
+- sudo minikube status
+- sudo kubectl get services
+- which kubectl
+- which minikube
+- sudo minikube status
+- sudo kubectl version
+- sudo kubectl get nodes
+- sudo minikube
+
 
