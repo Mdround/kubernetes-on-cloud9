@@ -161,4 +161,8 @@ For me, this generated some useful, colourful output:
 - sudo kubectl get nodes
 - sudo minikube
 
+## Commands that don't ##
 
+- sudo minikube ssh
+  - `💡  'none' driver does not support 'minikube ssh' command`
+  
