@@ -150,7 +150,7 @@ For me, this generated some useful, colourful output:
 🏄  Done! kubectl is now configured to use "minikube"
 ```
 
-## Commands that work ##
+### Commands that work ###
 
 - sudo minikube status
 - sudo kubectl get services
@@ -161,8 +161,56 @@ For me, this generated some useful, colourful output:
 - sudo kubectl get nodes
 - sudo minikube
 
-## Commands that don't ##
+### Commands that don't ###
 
 - sudo minikube ssh
   - `💡  'none' driver does not support 'minikube ssh' command`
   
+
+## Learning with minikube ##
+
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+## Installing Kubeflow ##
+
+Install Kubeflow on Amazon EKS
+Download 0.6.1+ release of kfctl. This binary will allow you to install Kubeflow on Amazon EKS:
+```
+curl --silent --location "https://github.com/kubeflow/kubeflow/releases/download/v0.6.1/kfctl_v0.6.1_$(uname -s).tar.gz" | tar xz -C /tmp
+sudo mv -v /tmp/kfctl /usr/local/bin
+```
+
+Download Kubeflow configuration file:
+```
+CONFIG=~/environment/kfctl_aws.yaml
+curl -Lo ${CONFIG} [....where from?.....]
+# ???
+```
+
+Set Kubeflow application name:
+```
+export KFAPP=${CLUSTER_NAME} 
+```
+
+Initialize the cluster:
+```
+kfctl init ${KFAPP} --config=${CONFIG} -V
+```
+
+Create and apply AWS and Kubernetes resources in the cluster:
+```
+cd ${KFAPP}
+
+kfctl generate all -V
+kfctl apply all -V
+```
+
+
