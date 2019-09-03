@@ -165,11 +165,11 @@ For me, this generated some useful, colourful output:
 
 - sudo minikube ssh
   - `💡  'none' driver does not support 'minikube ssh' command`
-  
+- minikube dashboard (yet!)
 
 ## Learning with minikube ##
 
- 
+
   
   
   
