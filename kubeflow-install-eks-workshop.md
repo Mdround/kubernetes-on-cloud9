@@ -147,6 +147,17 @@ cd ${KFAPP}
 kfctl delete all -V
 ```
 
+List the services still running
+```
+kubectl get svc --all-namespaces
+```
+
+Delete any services that have an associated EXTERNAL-IP value (see https://docs.aws.amazon.com/eks/latest/userguide/delete-cluster.html): these services are fronted by an Elastic Load Balancing load balancer, and you must delete them in Kubernetes to allow the load balancer and associated resources to be properly released. 
+
+```
+# kubectl delete svc {insert-service-name-here}
+```
+
 Delete the nodegroup stack, within CloudFormation.
 - if you try to delete the instances alone, AWS will just spin up new ones
 
